@@ -1,0 +1,3 @@
+module use /software/intel/oneapi_hpc_2022.1/modulefiles
+module load vtune/latest
+vtune-gui &
