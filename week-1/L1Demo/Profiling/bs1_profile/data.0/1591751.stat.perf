@@ -1,0 +1,60 @@
+# AMPLXE_PERF_STAT
+# hostname : midway3-login3.rcc.local
+# os release : 4.18.0-305.57.1.el8_4.x86_64
+# arch : x86_64
+# cpuid : GenuineIntel,6,106,6
+# cpudesc : Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz
+# total memory : 263261812 kB
+# nrcpus online : 64
+# nrcpus avail : 64
+# sibling cores : 0-15,32-47
+# sibling cores : 16-31,48-63
+# sibling threads : 0,32
+# sibling threads : 1,33
+# sibling threads : 2,34
+# sibling threads : 3,35
+# sibling threads : 4,36
+# sibling threads : 5,37
+# sibling threads : 6,38
+# sibling threads : 7,39
+# sibling threads : 8,40
+# sibling threads : 9,41
+# sibling threads : 10,42
+# sibling threads : 11,43
+# sibling threads : 12,44
+# sibling threads : 13,45
+# sibling threads : 14,46
+# sibling threads : 15,47
+# sibling threads : 16,48
+# sibling threads : 17,49
+# sibling threads : 18,50
+# sibling threads : 19,51
+# sibling threads : 20,52
+# sibling threads : 21,53
+# sibling threads : 22,54
+# sibling threads : 23,55
+# sibling threads : 24,56
+# sibling threads : 25,57
+# sibling threads : 26,58
+# sibling threads : 27,59
+# sibling threads : 28,60
+# sibling threads : 29,61
+# sibling threads : 30,62
+# sibling threads : 31,63
+# process id : 1591751
+;;427802354;0
+;;368512996;1
+;;873533289;2
+;;420706349;3
+;;8692872;4
+;;18791051;5
+;;0;6
+;;33622;7
+;;50516227;8
+;;0;9
+;;0;10
+;;990635763;11
+;;1174138272;12
+;;0;13
+;;0;14
+;;2136186515;15
