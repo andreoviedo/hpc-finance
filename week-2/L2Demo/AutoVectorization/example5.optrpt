@@ -1,0 +1,56 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main()) [1] example5.cpp(12,1)
+  -> INLINE: (16,9) add(float *, float *, float *, float *, float *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at example5.cpp(6,5) inlined into example5.cpp(16,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between  line 7 and  line 7
+   remark #25436: completely unrolled by 8  
+LOOP END
+===========================================================================
+
+Begin optimization report for: add(float *, float *, float *, float *, float *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (add(float *, float *, float *, float *, float *, int)) [2] example5.cpp(5,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at example5.cpp(6,5)
+<Multiversioned v1>
+   remark #25228: Loop multiversioned for Data Dependence
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at example5.cpp(6,5)
+<Multiversioned v2>
+   remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+   remark #25436: completely unrolled by 8  
+LOOP END
+===========================================================================
