@@ -31,16 +31,14 @@ public:
 };
 
 // Define math constants if not available
-#ifndef M_SQRT1_2
-#define M_SQRT1_2 0.70710678118654752440 // 1/sqrt(2)
-#endif
 
+const float invsqrt2 = 0.7071068f;
 // Class to represent a European Option and calculate its value
 class EuropeanOption {
 private:
     // Helper function for Normal CDF using erf
     double norm_cdf(double value) const {
-        return 0.5 * std::erfc(-value * M_SQRT1_2);
+        return 0.5 * std::erfc(-value * invsqrt2);
     }
 
 public:
