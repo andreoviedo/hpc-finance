@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
-#include <cmath> // Added for potential use later (e.g., std::pow, std::exp)
-#include <algorithm> // Added for potential use later (e.g., std::max)
+#include <cmath>
+#include <algorithm>
 #include <random>
 #include <omp.h>
 #include <iomanip>
 #include <chrono>
+
 // Let's parallelize the random number generation
 // #include <mkl.h>
 // #include <mkl_vsl.h>
@@ -13,10 +14,6 @@
 
 
 using namespace std::chrono;
-// Function to generate random data - Note: This seems unrelated to binomial trees.
-// Consider if this is needed for this specific task. std::rand() is also generally
-// not recommended for serious numerical work; <random> header is preferred.
-
 // Required bash commands:
 
 // module load intel
@@ -52,7 +49,6 @@ float random_data(float low, float hi)
 //     double optionValue = 0.0;
 // };
 
-
 // The logic is as follows:
 // We need to generate the last "leaves" of the tree. We created the tree structure for the
 // last step. The first step is to generate the asset prices for the last step
@@ -62,7 +58,7 @@ float random_data(float low, float hi)
 // One question I have here is that becaus we are using pragma for each 1 of 1 million simulations,
 // it means that I cannot parallelize the generation of the last step, right?
 
-// Maybe I can vectorirze this?
+// Maybe I can vectorize this?
 
 std::vector<float> generateLastStep(
     float S0, float T, int N, float sigma, float r)
@@ -74,7 +70,7 @@ std::vector<float> generateLastStep(
     float d = std::exp(drift * dt - sigma * sqrt_dt);
     std::vector<float> finalAssetPrices(N + 1);
 
-    // Vectorize this?
+    // Vectorize this? Hopefully
 
     for (int j = 0; j <= N; ++j) {
         finalAssetPrices[j] = S0 * std::pow(u, j) * std::pow(d, N - j);
@@ -88,7 +84,9 @@ enum class OptionType {
     Put
 };
 
-// Function to price a European option using the memory-optimized binomial method
+// Function to price a European option using backward induction
+// I think this is the most memory-optimized version of the code after some testing
+
 float priceEuropeanOption(
     float S0, float K, float T, int N, float sigma, float r,
     OptionType optionType)
