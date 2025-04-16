@@ -1,0 +1,36 @@
+10 [4132929984] INFO perfrun.launcher <> - Launcher main begin
+11 [4132929984] INFO perfrun.launcher <> - MessageCatalogInit finished
+11 [4132929984] INFO perfrun.launcher <> - Launcher instance created
+11 [4132929984] INFO perfrun.launcher <> - argc = 6; cmdline = /software/intel/oneapi_hpc_2022.1/vtune/2022.0.0/bin32/amplxe-runss -dump-vdso -r /scratch/local/jobs/30463156/amplxe-tmp-aoviedo/amplxe-res-1801214-210356485737483900 --tmp-dir /scratch/local/jobs/30463156/amplxe-tmp-aoviedo 
+27 [4132929984] INFO perfrun.launcher <> - create msngr2::ICliToolContext
+27 [4132929984] INFO perfrun.launcher <> - create file finder object
+31 [4132256576] INFO perfrun.launcher <> - plugin [remoteplug] was disabled because it doesn't support the given collection type.
+31 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+31 [4132256576] INFO perfrun.vdso <> - dumping [vdso] pseudomodule
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132256576] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+32 [4132929984] INFO perfrun.launcher <> - Application exit code: 0
+33 [4132929984] INFO perfrun.launcher <> - Exit code: 0

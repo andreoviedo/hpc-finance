@@ -1,0 +1,910 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+
+Begin optimization report for: main()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main())
+  -> INLINE: (221,5) tests()
+    -> (135,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (136,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (137,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (137,39) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (137,54) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (137,68) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (137,82) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+    -> (139,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (140,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (141,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (141,39) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (141,54) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (141,68) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (141,82) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+    -> (143,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (144,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (145,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (145,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (145,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (145,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (145,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+    -> (147,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (148,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (149,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (149,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (149,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (149,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (149,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+    -> (151,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (152,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+    -> (153,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (153,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (153,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+    -> (153,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+    -> (153,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> (222,5) simulation()
+
+
+    Report from: Code generation optimizations [cg]
+
+assignment_2_solution.cpp(220,12):remark #34051: REGISTER ALLOCATION : [main] assignment_2_solution.cpp:220
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    8[ rax rsi rdi zmm0-zmm4]
+        
+    Routine temporaries
+        Total         :     212
+            Global    :      77
+            Local     :     135
+        Regenerable   :     116
+        Spilled       :      10
+        
+    Routine stack
+        Variables     :       4 bytes*
+            Reads     :       2 [0.00e+00 ~ 0.0%]
+            Writes    :       2 [0.00e+00 ~ 0.0%]
+        Spills        :      80 bytes*
+            Reads     :      10 [5.81e+00 ~ 5.8%]
+            Writes    :      10 [5.81e+00 ~ 5.8%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: priceEuropeanOption(float, float, float, int, float, float, OptionType)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (priceEuropeanOption(float, float, float, int, float, float, OptionType))
+  -> INLINE: (99,28) std::exp(float)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (101,43) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> INLINE: (101,43) generateLastStep(std::vector<float, std::allocator<float>> *, float, float, int, float, float)
+    -> INLINE: (71,21) std::sqrt(float)
+    -> INLINE: (73,15) std::exp(float)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (74,15) std::exp(float)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> DELETED: (75,40) std::allocator<float>::~allocator(std::allocator<float> *)
+    -> INLINE: (75,45) std::allocator<float>::allocator(std::allocator<float> *)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (75,45) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> DELETED: (75,45) std::allocator<float>::~allocator(std::allocator<float> *)
+    -> INLINE: (80,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+    -> INLINE: (80,36) std::pow<float, int>(float, int)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (80,53) std::pow<float, int>(float, int)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> DELETED: (102,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (102,41) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (102,41) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (102,41) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (108,52) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (110,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (110,31) std::max<float>(const float &, const float &)
+  -> INLINE: (112,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (112,31) std::max<float>(const float &, const float &)
+  -> INLINE: (120,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (120,65) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (120,91) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (123,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (123,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (123,24) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at assignment_2_solution.cpp(106,5)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+OpenMP Construct at assignment_2_solution.cpp(117,5)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(101,43)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(101,43)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(101,43)
+   <Remainder loop for vectorization>
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(79,5) inlined into assignment_2_solution.cpp(101,43)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(79,5) inlined into assignment_2_solution.cpp(101,43)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(102,41)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(102,41)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(102,41)
+   <Remainder loop for vectorization>
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Peeled loop for vectorization, Predicate Optimized v1>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Predicate Optimized v1>
+   remark #25422: Invariant Condition at line 109 hoisted out of this loop
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Alternate Alignment Vectorized Loop, Predicate Optimized v1>
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Remainder loop for vectorization, Predicate Optimized v1>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Peeled loop for vectorization, Predicate Optimized v2>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Predicate Optimized v2>
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Alternate Alignment Vectorized Loop, Predicate Optimized v2>
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(106,5)
+<Remainder loop for vectorization, Predicate Optimized v2>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(118,5)
+   remark #25460: No loop optimizations reported
+
+   LOOP BEGIN at assignment_2_solution.cpp(119,9)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at assignment_2_solution.cpp(119,9)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at assignment_2_solution.cpp(119,9)
+   <Remainder loop for vectorization>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at assignment_2_solution.cpp(119,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+assignment_2_solution.cpp(120,65):remark #34055: adjacent dense (unit-strided stencil) loads are not optimized. Details: stride { 4 }, step { 4 }, types { F32-V128, F32-V128 }, number of elements { 4 }, select mask { 0x000000003 }.
+assignment_2_solution.cpp(120,65):remark #34055: adjacent dense (unit-strided stencil) loads are not optimized. Details: stride { 4 }, step { 4 }, types { F32-V128, F32-V128 }, number of elements { 4 }, select mask { 0x000000003 }.
+assignment_2_solution.cpp(120,65):remark #34055: adjacent dense (unit-strided stencil) loads are not optimized. Details: stride { 4 }, step { 4 }, types { F32-V128, F32-V128 }, number of elements { 4 }, select mask { 0x000000003 }.
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+assignment_2_solution.cpp(95,1):remark #34051: REGISTER ALLOCATION : [_Z19priceEuropeanOptionfffiff10OptionType] assignment_2_solution.cpp:95
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   31[ rax rdx rcx rbx rbp rsi rdi r8-r15 zmm0-zmm15]
+        
+    Routine temporaries
+        Total         :     529
+            Global    :     145
+            Local     :     384
+        Regenerable   :     126
+        Spilled       :      15
+        
+    Routine stack
+        Variables     :     132 bytes*
+            Reads     :      14 [1.24e-01 ~ 0.1%]
+            Writes    :      39 [2.14e+00 ~ 2.1%]
+        Spills        :     168 bytes*
+            Reads     :      41 [1.35e+00 ~ 1.4%]
+            Writes    :      35 [1.93e+00 ~ 1.9%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::char_traits<char>::length(const std::char_traits<char>::char_type *)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/char_traits.h(317,7):remark #34051: REGISTER ALLOCATION : [_ZNSt11char_traitsIcE6lengthEPKc] /usr/include/c++/8/bits/char_traits.h:317
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    3[ rax rdx rdi]
+        
+    Routine temporaries
+        Total         :      12
+            Global    :       7
+            Local     :       5
+        Regenerable   :       0
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: simulation()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (simulation())
+  -> DELETED: (171,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> (171,34) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> DELETED: (171,34) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (171,34) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (171,34) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> DELETED: (172,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> (172,33) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> DELETED: (172,33) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (172,33) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (172,33) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> DELETED: (173,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (173,33) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (173,33) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (173,33) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (173,33) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> DELETED: (174,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (174,37) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (174,37) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (174,37) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (174,37) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> DELETED: (175,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (175,33) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (175,33) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (175,33) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (175,33) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> DELETED: (176,24) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (176,32) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (176,32) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (176,32) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (176,32) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+  -> INLINE: (191,27) std::vector<float, std::allocator<float>>::data(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (193,26) std::vector<float, std::allocator<float>>::data(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (195,26) std::vector<float, std::allocator<float>>::data(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (197,30) std::vector<float, std::allocator<float>>::data(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (199,26) std::vector<float, std::allocator<float>>::data(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (208,16) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> (208,22) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> INLINE: (209,22) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (209,35) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (209,48) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (210,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (210,38) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> (215,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (215,35) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, long)
+  -> INLINE: (215,66) std::chrono::duration_cast<std::chrono::milliseconds, int64_t, std::nano>(const std::chrono::duration<int64_t, std::nano> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (215,69) std::chrono::operator-<std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration, std::chrono::_V2::system_clock::duration>(const std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration> &, const std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (215,73) std::chrono::duration<int64_t, std::milli>::count(const std::chrono::duration<int64_t, std::milli> *) const
+  -> (215,81) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (215,100) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (216,5) std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at assignment_2_solution.cpp(206,5)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(171,34)
+   remark #25408: memset generated
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(172,33)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(172,33)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(173,33)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(173,33)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(174,37)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(174,37)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(175,33)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(175,33)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(176,32)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(176,32)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+assignment_2_solution.cpp(167,18):remark #34051: REGISTER ALLOCATION : [_Z10simulationv] assignment_2_solution.cpp:167
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   20[ rax rdx rcx rbx rbp rsi rdi r8-r15 zmm0-zmm4]
+        
+    Routine temporaries
+        Total         :     382
+            Global    :      96
+            Local     :     286
+        Regenerable   :     143
+        Spilled       :       4
+        
+    Routine stack
+        Variables     :     224 bytes*
+            Reads     :      34 [4.80e+00 ~ 4.8%]
+            Writes    :      73 [8.20e+00 ~ 8.2%]
+        Spills        :      80 bytes*
+            Reads     :      16 [2.88e+00 ~ 2.9%]
+            Writes    :      16 [2.85e+00 ~ 2.9%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::_Vector_base<float, std::allocator<float>>::~_Vector_base(std::_Vector_base<float, std::allocator<float>> *)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/stl_vector.h(284,7):remark #34051: REGISTER ALLOCATION : [_ZNSt12_Vector_baseIfSaIfEED1Ev] /usr/include/c++/8/bits/stl_vector.h:284
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    1[ rdi]
+        
+    Routine temporaries
+        Total         :      10
+            Global    :       7
+            Local     :       3
+        Regenerable   :       0
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::vector<float, std::allocator<float>>::~vector(std::vector<float, std::allocator<float>> *)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/stl_vector.h(566,7):remark #34051: REGISTER ALLOCATION : [_ZNSt6vectorIfSaIfEED1Ev] /usr/include/c++/8/bits/stl_vector.h:566
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    1[ rdi]
+        
+    Routine temporaries
+        Total         :      10
+            Global    :       7
+            Local     :       3
+        Regenerable   :       0
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: random_data(float, float)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (random_data(float, float))
+
+
+    Report from: Code generation optimizations [cg]
+
+assignment_2_solution.cpp(42,1):remark #34051: REGISTER ALLOCATION : [_Z11random_dataff] assignment_2_solution.cpp:42
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    4[ rax zmm0-zmm2]
+        
+    Routine temporaries
+        Total         :      18
+            Global    :      10
+            Local     :       8
+        Regenerable   :       0
+        Spilled       :       2
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :      16 bytes*
+            Reads     :       2 [8.00e+00 ~ 8.0%]
+            Writes    :       2 [8.00e+00 ~ 8.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: generateLastStep(std::vector<float, std::allocator<float>> *, float, float, int, float, float)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (generateLastStep(std::vector<float, std::allocator<float>> *, float, float, int, float, float))
+  -> INLINE: (71,21) std::sqrt(float)
+  -> INLINE: (73,15) std::exp(float)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (74,15) std::exp(float)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> DELETED: (75,40) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> DELETED: (75,45) std::allocator<float>::~allocator(std::allocator<float> *)
+  -> INLINE: (75,45) std::vector<float, std::allocator<float>>::vector(std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type, const std::vector<float, std::allocator<float>>::allocator_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (75,45) std::allocator<float>::allocator(std::allocator<float> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (80,25) std::vector<float, std::allocator<float>>::operator[](std::vector<float, std::allocator<float>> *, std::vector<float, std::allocator<float>>::size_type)
+  -> INLINE: (80,36) std::pow<float, int>(float, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (80,53) std::pow<float, int>(float, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(75,45)
+   remark #25408: memset generated
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(75,45)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7) inlined into assignment_2_solution.cpp(75,45)
+   <Remainder loop for vectorization>
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(79,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at assignment_2_solution.cpp(79,5)
+<Remainder loop for vectorization>
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/stl_algobase.h(752,7):remark #34026: call to memset implemented as a call to optimized library version
+assignment_2_solution.cpp(69,1):remark #34051: REGISTER ALLOCATION : [_Z16generateLastStepffiff] assignment_2_solution.cpp:69
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   24[ rax rdx rbx rbp rsi rdi r12-r15 zmm0-zmm5 zmm8-zmm15]
+        
+    Routine temporaries
+        Total         :     128
+            Global    :      47
+            Local     :      81
+        Regenerable   :      10
+        Spilled       :      11
+        
+    Routine stack
+        Variables     :       8 bytes*
+            Reads     :       1 [0.00e+00 ~ 0.0%]
+            Writes    :       1 [0.00e+00 ~ 0.0%]
+        Spills        :      40 bytes*
+            Reads     :       8 [1.86e+00 ~ 1.9%]
+            Writes    :       5 [1.26e+00 ~ 1.3%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: tests()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (tests())
+  -> (135,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (136,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (137,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (137,39) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (137,54) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (137,68) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (137,82) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> (139,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (140,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (141,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (141,39) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (141,54) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (141,68) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (141,82) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> (143,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (144,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (145,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (145,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (145,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (145,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (145,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> (147,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (148,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (149,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (149,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (149,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (149,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (149,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+  -> (151,25) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (152,24) priceEuropeanOption(float, float, float, int, float, float, OptionType)
+  -> (153,15) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (153,40) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (153,55) std::operator<<<std::char_traits<char>>(std::basic_ostream<char, std::char_traits<char>> &, const char *)
+  -> (153,69) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, float)
+  -> (153,83) std::basic_ostream<char, std::char_traits<char>>::operator<<(std::basic_ostream<char, std::char_traits<char>> *, std::basic_ostream<char, std::char_traits<char>>::__ostream_type &(*)(std::basic_ostream<char, std::char_traits<char>>::__ostream_type &))
+
+
+    Report from: Code generation optimizations [cg]
+
+assignment_2_solution.cpp(128,13):remark #34051: REGISTER ALLOCATION : [_Z5testsv] assignment_2_solution.cpp:128
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    8[ rax rsi rdi zmm0-zmm4]
+        
+    Routine temporaries
+        Total         :     203
+            Global    :      77
+            Local     :     126
+        Regenerable   :     107
+        Spilled       :      10
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :      80 bytes*
+            Reads     :      10 [5.65e+00 ~ 5.6%]
+            Writes    :      10 [5.65e+00 ~ 5.6%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::chrono::duration_cast<std::chrono::milliseconds, int64_t, std::nano>(const std::chrono::duration<int64_t, std::nano> &)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/chrono(194,7):remark #34051: REGISTER ALLOCATION : [_ZNSt6chrono13duration_castINS_8durationIlSt5ratioILl1ELl1000EEEElS2_ILl1ELl1000000000EEEENSt9enable_ifIXsr3std6chrono13__is_durationIT_EE5valueES7_E4typeERKNS1_IT0_T1_EE] /usr/include/c++/8/chrono:194
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    4[ rax rdx rcx rdi]
+        
+    Routine temporaries
+        Total         :      18
+            Global    :       0
+            Local     :      18
+        Regenerable   :       2
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::pow<float, int>(float, int)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/cmath(416,5):remark #34051: REGISTER ALLOCATION : [_ZSt3powIfiEN9__gnu_cxx11__promote_2IT_T0_NS0_9__promoteIS2_Xsr3std12__is_integerIS2_EE7__valueEE6__typeENS4_IS3_Xsr3std12__is_integerIS3_EE7__valueEE6__typeEE6__typeES2_S3_] /usr/include/c++/8/cmath:416
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    3[ rdi zmm0-zmm1]
+        
+    Routine temporaries
+        Total         :      17
+            Global    :       7
+            Local     :      10
+        Regenerable   :       0
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: std::__fill_n_a<std::_Vector_base<float, std::allocator<float>>::pointer, std::vector<float, std::allocator<float>>::size_type, std::iterator_traits<std::_Vector_base<float, std::allocator<float>>::pointer>::value_type>(std::_Vector_base<float, std::allocator<float>>::pointer, std::vector<float, std::allocator<float>>::size_type, const std::iterator_traits<std::_Vector_base<float, std::allocator<float>>::pointer>::value_type &)
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7)
+<Peeled loop for vectorization>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at /usr/include/c++/8/bits/stl_algobase.h(752,7)
+<Remainder loop for vectorization>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/8/bits/stl_algobase.h(750,5):remark #34051: REGISTER ALLOCATION : [_ZSt10__fill_n_aIPfmfEN9__gnu_cxx11__enable_ifIXsr3std11__is_scalarIT1_EE7__valueET_E6__typeES4_T0_RKS3_] /usr/include/c++/8/bits/stl_algobase.h:750
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    8[ rax rdx rcx rsi rdi r8 zmm0-zmm1]
+        
+    Routine temporaries
+        Total         :      26
+            Global    :      14
+            Local     :      12
+        Regenerable   :       0
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E())
+
+
+    Report from: Code generation optimizations [cg]
+
+<compiler generated>:remark #34051: REGISTER ALLOCATION : [__sti__$E] (null):0
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    3[ rdx rsi rdi]
+        
+    Routine temporaries
+        Total         :      13
+            Global    :       7
+            Local     :       6
+        Regenerable   :       7
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
