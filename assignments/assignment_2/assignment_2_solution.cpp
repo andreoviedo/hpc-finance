@@ -32,6 +32,7 @@ using namespace std::chrono;
 // For vectorization report
 
 // icc -qopt-report=1 -O2 assignment_2_solution.cpp -o assignment_2_solution
+
 #define PROB_UP 0.5
 #define PROB_DOWN 0.5
 
