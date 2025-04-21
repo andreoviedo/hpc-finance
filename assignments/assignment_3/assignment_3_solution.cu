@@ -159,145 +159,45 @@ __host__ __device__ float theta(float S0, float K, float T, float v, float r, Op
     }
 }
 
-
-
-// Part 1: tests
-
-
-// a)   S = 90;  r = 0.03; v = 0.3, T= 1, K=90
-// b)   S = 95; r = 0.03,  v= 0.3;  T= 1, K=90
-// c)   S = 100;  r = 0.03; v = 0.3;  T= 2, K=100
-// d)   S = 105; r = 0.03,  v= 0.3;  T= 2, K=100
-// e)   S = 110; r = 0.03,  v= 0.3;  T= 2, K=100
-
-int tests() {
-    // Test case a
-    float S0_a = 90.0f;
-    float K_a = 90.0f;
-    float r = 0.03f;
-    float sigma = 0.3f;
-    float T_a = 1.0f;
+__host__ __device__ void compute_all_option_values(
+    float S0, float K, float T, float v, float r,
+    float& call_price, float& put_price, 
+    float& delta_call, float& delta_put,
+    float& gamma_val, float& vega_val,
+    float& rho_call, float& rho_put,
+    float& theta_call, float& theta_put) {
     
-    float call_price_a = price_option(S0_a, K_a, T_a, sigma, r, OptionType::Call);
-    float put_price_a = price_option(S0_a, K_a, T_a, sigma, r, OptionType::Put);
-    float delta_call_a = delta(S0_a, K_a, T_a, sigma, r, OptionType::Call);
-    float delta_put_a = delta(S0_a, K_a, T_a, sigma, r, OptionType::Put);
-    float gamma_a = gamma(S0_a, K_a, T_a, sigma, r);
-    float vega_a = vega(S0_a, K_a, T_a, sigma, r);
-    float theta_call_a = theta(S0_a, K_a, T_a, sigma, r, OptionType::Call);
-    float theta_put_a = theta(S0_a, K_a, T_a, sigma, r, OptionType::Put);
-    float rho_call_a = rho(S0_a, K_a, T_a, sigma, r, OptionType::Call);
-    float rho_put_a = rho(S0_a, K_a, T_a, sigma, r, OptionType::Put);
+    // Calculate common values once
+    float sqrt_T = sqrt(T);
+    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt_T);
+    float d2 = d1 - v * sqrt_T;
+    float nd1 = cdf_normal(d1);
+    float nd2 = cdf_normal(d2);
+    float pd1 = pdf_normal(d1);
+    float exp_rt = exp(-r * T);
     
-    std::cout << "a) S = " << S0_a << ", K = " << K_a << ", T = " << T_a << ":" << std::endl;
-    std::cout << "   Call Price = " << call_price_a << ", Put Price = " << put_price_a << std::endl;
-    std::cout << "   Delta Call = " << delta_call_a << ", Delta Put = " << delta_put_a << std::endl;
-    std::cout << "   Gamma = " << gamma_a << std::endl;
-    std::cout << "   Vega = " << vega_a << std::endl;
-    std::cout << "   Theta Call = " << theta_call_a << ", Theta Put = " << theta_put_a << std::endl;
-    std::cout << "   Rho Call = " << rho_call_a << ", Rho Put = " << rho_put_a << std::endl;
-    std::cout << std::endl;
+    // Option prices
+    call_price = S0 * nd1 - K * exp_rt * nd2;
+    put_price = K * exp_rt * (1.0f - nd2) - S0 * (1.0f - nd1);
     
-    // Test case b
-    float S0_b = 95.0f;
-    float K_b = 90.0f;
-    float T_b = 1.0f;
+    // Delta
+    delta_call = nd1;
+    delta_put = nd1 - 1.0f;
     
-    float call_price_b = price_option(S0_b, K_b, T_b, sigma, r, OptionType::Call);
-    float put_price_b = price_option(S0_b, K_b, T_b, sigma, r, OptionType::Put);
-    float delta_call_b = delta(S0_b, K_b, T_b, sigma, r, OptionType::Call);
-    float delta_put_b = delta(S0_b, K_b, T_b, sigma, r, OptionType::Put);
-    float gamma_b = gamma(S0_b, K_b, T_b, sigma, r);
-    float vega_b = vega(S0_b, K_b, T_b, sigma, r);
-    float theta_call_b = theta(S0_b, K_b, T_b, sigma, r, OptionType::Call);
-    float theta_put_b = theta(S0_b, K_b, T_b, sigma, r, OptionType::Put);
-    float rho_call_b = rho(S0_b, K_b, T_b, sigma, r, OptionType::Call);
-    float rho_put_b = rho(S0_b, K_b, T_b, sigma, r, OptionType::Put);
+    // Gamma (same for both call and put)
+    gamma_val = pd1 / (S0 * v * sqrt_T);
     
-    std::cout << "b) S = " << S0_b << ", K = " << K_b << ", T = " << T_b << ":" << std::endl;
-    std::cout << "   Call Price = " << call_price_b << ", Put Price = " << put_price_b << std::endl;
-    std::cout << "   Delta Call = " << delta_call_b << ", Delta Put = " << delta_put_b << std::endl;
-    std::cout << "   Gamma = " << gamma_b << std::endl;
-    std::cout << "   Vega = " << vega_b << std::endl;
-    std::cout << "   Theta Call = " << theta_call_b << ", Theta Put = " << theta_put_b << std::endl;
-    std::cout << "   Rho Call = " << rho_call_b << ", Rho Put = " << rho_put_b << std::endl;
-    std::cout << std::endl;
+    // Vega (same for both call and put)
+    vega_val = S0 * sqrt_T * pd1 * 0.01f;
     
-    // Test case c
-    float S0_c = 100.0f;
-    float K_c = 100.0f;
-    float T_c = 2.0f;
+    // Rho
+    rho_call = K * T * exp_rt * nd2 * 0.01f;
+    rho_put = -K * T * exp_rt * (1.0f - nd2) * 0.01f;
     
-    float call_price_c = price_option(S0_c, K_c, T_c, sigma, r, OptionType::Call);
-    float put_price_c = price_option(S0_c, K_c, T_c, sigma, r, OptionType::Put);
-    float delta_call_c = delta(S0_c, K_c, T_c, sigma, r, OptionType::Call);
-    float delta_put_c = delta(S0_c, K_c, T_c, sigma, r, OptionType::Put);
-    float gamma_c = gamma(S0_c, K_c, T_c, sigma, r);
-    float vega_c = vega(S0_c, K_c, T_c, sigma, r);
-    float theta_call_c = theta(S0_c, K_c, T_c, sigma, r, OptionType::Call);
-    float theta_put_c = theta(S0_c, K_c, T_c, sigma, r, OptionType::Put);
-    float rho_call_c = rho(S0_c, K_c, T_c, sigma, r, OptionType::Call);
-    float rho_put_c = rho(S0_c, K_c, T_c, sigma, r, OptionType::Put);
-    
-    std::cout << "c) S = " << S0_c << ", K = " << K_c << ", T = " << T_c << ":" << std::endl;
-    std::cout << "   Call Price = " << call_price_c << ", Put Price = " << put_price_c << std::endl;
-    std::cout << "   Delta Call = " << delta_call_c << ", Delta Put = " << delta_put_c << std::endl;
-    std::cout << "   Gamma = " << gamma_c << std::endl;
-    std::cout << "   Vega = " << vega_c << std::endl;
-    std::cout << "   Theta Call = " << theta_call_c << ", Theta Put = " << theta_put_c << std::endl;
-    std::cout << "   Rho Call = " << rho_call_c << ", Rho Put = " << rho_put_c << std::endl;
-    std::cout << std::endl;
-    
-    // Test case d
-    float S0_d = 105.0f;
-    float K_d = 100.0f;
-    float T_d = 2.0f;
-    
-    float call_price_d = price_option(S0_d, K_d, T_d, sigma, r, OptionType::Call);
-    float put_price_d = price_option(S0_d, K_d, T_d, sigma, r, OptionType::Put);
-    float delta_call_d = delta(S0_d, K_d, T_d, sigma, r, OptionType::Call);
-    float delta_put_d = delta(S0_d, K_d, T_d, sigma, r, OptionType::Put);
-    float gamma_d = gamma(S0_d, K_d, T_d, sigma, r);
-    float vega_d = vega(S0_d, K_d, T_d, sigma, r);
-    float theta_call_d = theta(S0_d, K_d, T_d, sigma, r, OptionType::Call);
-    float theta_put_d = theta(S0_d, K_d, T_d, sigma, r, OptionType::Put);
-    float rho_call_d = rho(S0_d, K_d, T_d, sigma, r, OptionType::Call);
-    float rho_put_d = rho(S0_d, K_d, T_d, sigma, r, OptionType::Put);
-    
-    std::cout << "d) S = " << S0_d << ", K = " << K_d << ", T = " << T_d << ":" << std::endl;
-    std::cout << "   Call Price = " << call_price_d << ", Put Price = " << put_price_d << std::endl;
-    std::cout << "   Delta Call = " << delta_call_d << ", Delta Put = " << delta_put_d << std::endl;
-    std::cout << "   Gamma = " << gamma_d << std::endl;
-    std::cout << "   Vega = " << vega_d << std::endl;
-    std::cout << "   Theta Call = " << theta_call_d << ", Theta Put = " << theta_put_d << std::endl;
-    std::cout << "   Rho Call = " << rho_call_d << ", Rho Put = " << rho_put_d << std::endl;
-    std::cout << std::endl;
-    
-    // Test case e
-    float S0_e = 110.0f;
-    float K_e = 100.0f;
-    float T_e = 2.0f;
-    
-    float call_price_e = price_option(S0_e, K_e, T_e, sigma, r, OptionType::Call);
-    float put_price_e = price_option(S0_e, K_e, T_e, sigma, r, OptionType::Put);
-    float delta_call_e = delta(S0_e, K_e, T_e, sigma, r, OptionType::Call);
-    float delta_put_e = delta(S0_e, K_e, T_e, sigma, r, OptionType::Put);
-    float gamma_e = gamma(S0_e, K_e, T_e, sigma, r);
-    float vega_e = vega(S0_e, K_e, T_e, sigma, r);
-    float theta_call_e = theta(S0_e, K_e, T_e, sigma, r, OptionType::Call);
-    float theta_put_e = theta(S0_e, K_e, T_e, sigma, r, OptionType::Put);
-    float rho_call_e = rho(S0_e, K_e, T_e, sigma, r, OptionType::Call);
-    float rho_put_e = rho(S0_e, K_e, T_e, sigma, r, OptionType::Put);
-    
-    std::cout << "e) S = " << S0_e << ", K = " << K_e << ", T = " << T_e << ":" << std::endl;
-    std::cout << "   Call Price = " << call_price_e << ", Put Price = " << put_price_e << std::endl;
-    std::cout << "   Delta Call = " << delta_call_e << ", Delta Put = " << delta_put_e << std::endl;
-    std::cout << "   Gamma = " << gamma_e << std::endl;
-    std::cout << "   Vega = " << vega_e << std::endl;
-    std::cout << "   Theta Call = " << theta_call_e << ", Theta Put = " << theta_put_e << std::endl;
-    std::cout << "   Rho Call = " << rho_call_e << ", Rho Put = " << rho_put_e << std::endl;
-    
-    return 0;
+    // Theta
+    float term1 = -(S0 * v * pd1) / (2.0f * sqrt_T);
+    theta_call = (term1 - r * K * exp_rt * nd2) / 365.0f;
+    theta_put = (term1 + r * K * exp_rt * (1.0f - nd2)) / 365.0f;
 }
 
 // Define kernel before simulation function
@@ -312,23 +212,110 @@ __global__ void option_pricing_kernel(
     
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_options) {
-        float s = S0[idx];
-        float k = K[idx];
-        float t = T[idx];
-        float v = sigma[idx];
-        float r_val = r[idx];
-        
-        call_prices[idx] = price_option(s, k, t, v, r_val, OptionType::Call);
-        put_prices[idx] = price_option(s, k, t, v, r_val, OptionType::Put);
-        delta_calls[idx] = delta(s, k, t, v, r_val, OptionType::Call);
-        delta_puts[idx] = delta(s, k, t, v, r_val, OptionType::Put);
-        gammas[idx] = gamma(s, k, t, v, r_val);
-        vegas[idx] = vega(s, k, t, v, r_val);
-        rho_calls[idx] = rho(s, k, t, v, r_val, OptionType::Call);
-        rho_puts[idx] = rho(s, k, t, v, r_val, OptionType::Put);
-        theta_calls[idx] = theta(s, k, t, v, r_val, OptionType::Call);
-        theta_puts[idx] = theta(s, k, t, v, r_val, OptionType::Put);
+        compute_all_option_values(
+            S0[idx], K[idx], T[idx], sigma[idx], r[idx],
+            call_prices[idx], put_prices[idx],
+            delta_calls[idx], delta_puts[idx],
+            gammas[idx], vegas[idx],
+            rho_calls[idx], rho_puts[idx],
+            theta_calls[idx], theta_puts[idx]
+        );
     }
+}
+
+// Part 1: tests
+
+
+// a)   S = 90;  r = 0.03; v = 0.3, T= 1, K=90
+// b)   S = 95; r = 0.03,  v= 0.3;  T= 1, K=90
+// c)   S = 100;  r = 0.03; v = 0.3;  T= 2, K=100
+// d)   S = 105; r = 0.03,  v= 0.3;  T= 2, K=100
+// e)   S = 110; r = 0.03,  v= 0.3;  T= 2, K=100
+
+int tests() {
+    float r = 0.03f;
+    float sigma = 0.3f;
+
+    // Test case a
+    float S0_a = 90.0f, K_a = 90.0f, T_a = 1.0f;
+    float call_price_a, put_price_a, delta_call_a, delta_put_a, gamma_a, vega_a, rho_call_a, rho_put_a, theta_call_a, theta_put_a;
+    compute_all_option_values(S0_a, K_a, T_a, sigma, r, 
+                              call_price_a, put_price_a, delta_call_a, delta_put_a, gamma_a, vega_a, 
+                              rho_call_a, rho_put_a, theta_call_a, theta_put_a);
+    
+    std::cout << "a) S = " << S0_a << ", K = " << K_a << ", T = " << T_a << ":" << std::endl;
+    std::cout << "   Call Price = " << call_price_a << ", Put Price = " << put_price_a << std::endl;
+    std::cout << "   Delta Call = " << delta_call_a << ", Delta Put = " << delta_put_a << std::endl;
+    std::cout << "   Gamma = " << gamma_a << std::endl;
+    std::cout << "   Vega = " << vega_a << std::endl;
+    std::cout << "   Theta Call = " << theta_call_a << ", Theta Put = " << theta_put_a << std::endl;
+    std::cout << "   Rho Call = " << rho_call_a << ", Rho Put = " << rho_put_a << std::endl;
+    std::cout << std::endl;
+    
+    // Test case b
+    float S0_b = 95.0f, K_b = 90.0f, T_b = 1.0f;
+    float call_price_b, put_price_b, delta_call_b, delta_put_b, gamma_b, vega_b, rho_call_b, rho_put_b, theta_call_b, theta_put_b;
+    compute_all_option_values(S0_b, K_b, T_b, sigma, r, 
+                              call_price_b, put_price_b, delta_call_b, delta_put_b, gamma_b, vega_b, 
+                              rho_call_b, rho_put_b, theta_call_b, theta_put_b);
+
+    std::cout << "b) S = " << S0_b << ", K = " << K_b << ", T = " << T_b << ":" << std::endl;
+    std::cout << "   Call Price = " << call_price_b << ", Put Price = " << put_price_b << std::endl;
+    std::cout << "   Delta Call = " << delta_call_b << ", Delta Put = " << delta_put_b << std::endl;
+    std::cout << "   Gamma = " << gamma_b << std::endl;
+    std::cout << "   Vega = " << vega_b << std::endl;
+    std::cout << "   Theta Call = " << theta_call_b << ", Theta Put = " << theta_put_b << std::endl;
+    std::cout << "   Rho Call = " << rho_call_b << ", Rho Put = " << rho_put_b << std::endl;
+    std::cout << std::endl;
+
+    // Test case c
+    float S0_c = 100.0f, K_c = 100.0f, T_c = 2.0f;
+    float call_price_c, put_price_c, delta_call_c, delta_put_c, gamma_c, vega_c, rho_call_c, rho_put_c, theta_call_c, theta_put_c;
+    compute_all_option_values(S0_c, K_c, T_c, sigma, r, 
+                              call_price_c, put_price_c, delta_call_c, delta_put_c, gamma_c, vega_c, 
+                              rho_call_c, rho_put_c, theta_call_c, theta_put_c);
+
+    std::cout << "c) S = " << S0_c << ", K = " << K_c << ", T = " << T_c << ":" << std::endl;
+    std::cout << "   Call Price = " << call_price_c << ", Put Price = " << put_price_c << std::endl;
+    std::cout << "   Delta Call = " << delta_call_c << ", Delta Put = " << delta_put_c << std::endl;
+    std::cout << "   Gamma = " << gamma_c << std::endl;
+    std::cout << "   Vega = " << vega_c << std::endl;
+    std::cout << "   Theta Call = " << theta_call_c << ", Theta Put = " << theta_put_c << std::endl;
+    std::cout << "   Rho Call = " << rho_call_c << ", Rho Put = " << rho_put_c << std::endl;
+    std::cout << std::endl;
+
+    // Test case d
+    float S0_d = 105.0f, K_d = 100.0f, T_d = 2.0f;
+    float call_price_d, put_price_d, delta_call_d, delta_put_d, gamma_d, vega_d, rho_call_d, rho_put_d, theta_call_d, theta_put_d;
+    compute_all_option_values(S0_d, K_d, T_d, sigma, r, 
+                              call_price_d, put_price_d, delta_call_d, delta_put_d, gamma_d, vega_d, 
+                              rho_call_d, rho_put_d, theta_call_d, theta_put_d);
+
+    std::cout << "d) S = " << S0_d << ", K = " << K_d << ", T = " << T_d << ":" << std::endl;
+    std::cout << "   Call Price = " << call_price_d << ", Put Price = " << put_price_d << std::endl;
+    std::cout << "   Delta Call = " << delta_call_d << ", Delta Put = " << delta_put_d << std::endl;
+    std::cout << "   Gamma = " << gamma_d << std::endl;
+    std::cout << "   Vega = " << vega_d << std::endl;
+    std::cout << "   Theta Call = " << theta_call_d << ", Theta Put = " << theta_put_d << std::endl;
+    std::cout << "   Rho Call = " << rho_call_d << ", Rho Put = " << rho_put_d << std::endl;
+    std::cout << std::endl;
+
+    // Test case e
+    float S0_e = 110.0f, K_e = 100.0f, T_e = 2.0f;
+    float call_price_e, put_price_e, delta_call_e, delta_put_e, gamma_e, vega_e, rho_call_e, rho_put_e, theta_call_e, theta_put_e;
+    compute_all_option_values(S0_e, K_e, T_e, sigma, r, 
+                              call_price_e, put_price_e, delta_call_e, delta_put_e, gamma_e, vega_e, 
+                              rho_call_e, rho_put_e, theta_call_e, theta_put_e);
+
+    std::cout << "e) S = " << S0_e << ", K = " << K_e << ", T = " << T_e << ":" << std::endl;
+    std::cout << "   Call Price = " << call_price_e << ", Put Price = " << put_price_e << std::endl;
+    std::cout << "   Delta Call = " << delta_call_e << ", Delta Put = " << delta_put_e << std::endl;
+    std::cout << "   Gamma = " << gamma_e << std::endl;
+    std::cout << "   Vega = " << vega_e << std::endl;
+    std::cout << "   Theta Call = " << theta_call_e << ", Theta Put = " << theta_put_e << std::endl;
+    std::cout << "   Rho Call = " << rho_call_e << ", Rho Put = " << rho_put_e << std::endl;
+    
+    return 0;
 }
 
 int simulation() {
@@ -421,6 +408,9 @@ int simulation() {
     cudaMemcpy(rho_puts.data(), d_rho_puts, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(theta_calls.data(), d_theta_calls, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(theta_puts.data(), d_theta_puts, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
+
+    // Print the first call price to verify results
+    std::cout << "First calculated call price: " << call_prices[0] << std::endl;
 
     // Free device memory
     cudaFree(d_S0);
