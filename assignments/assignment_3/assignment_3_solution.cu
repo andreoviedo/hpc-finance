@@ -22,6 +22,7 @@ using namespace std::chrono; // Add namespace
 // - We will need to use a lot of precomputed values
 // - You know what would be ideal? If from all the greeks we can compute the option price
 // - Check all the greeks for "common" arguments between them
+//     - Ended up making a function to compute all the values at once to take advantage of this!
 
 // Same helper function for random data generation
 
@@ -98,67 +99,6 @@ __host__ __device__ float price_option(float S0, float K, float T, float v, floa
 
 // One thing I didn't fully thought of was that we will need to compute the inverse of the CDF...
 
-// Delta: first derivative of the option price with respect to the stock price
-// - Delta depends on the option type
-
-__host__ __device__ float delta(float S0, float K, float T, float v, float r, OptionType optionType) {
-    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt(T));
-    
-    if (optionType == OptionType::Call) {
-        return cdf_normal(d1);
-    } else {
-        return cdf_normal(d1) - 1.0f;
-    }
-}
-
-// Gamma: second derivative of the option price with respect to the stock price
-
-// This doesn't depend on the option type!!! But has we have to compute the pdf
-
-__host__ __device__ float gamma(float S0, float K, float T, float v, float r) {
-    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt(T));
-    return pdf_normal(d1) / (S0 * v * sqrt(T));
-}
-
-// Vega: first derivative of the option price with respect to the volatility
-
-__host__ __device__ float vega(float S0, float K, float T, float v, float r) {
-    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt(T));
-    return S0 * sqrt(T) * pdf_normal(d1) * 0.01f; // Multiplied by 0.01 for 1% change
-}
-
-// Rho: first derivative of the option price with respect to the risk-free interest rate
-
-__host__ __device__ float rho(float S0, float K, float T, float v, float r, OptionType optionType) {
-    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt(T));
-    float d2 = d1 - v * sqrt(T);
-    
-    if (optionType == OptionType::Call) {
-        return K * T * exp(-r * T) * cdf_normal(d2) * 0.01f; // Multiplied by 0.01 for 1% change
-    } else {
-        return -K * T * exp(-r * T) * (1.0f - cdf_normal(d2)) * 0.01f;
-    }
-}
-
-// Theta: first derivative of the option price with respect to the time to maturity
-
-// This depends on the option type
-
-__host__ __device__ float theta(float S0, float K, float T, float v, float r, OptionType optionType) {
-    float d1 = (log(S0 / K) + (r + 0.5f * v * v) * T) / (v * sqrt(T));
-    float d2 = d1 - v * sqrt(T);
-    
-    float term1 = -(S0 * v * pdf_normal(d1)) / (2.0f * sqrt(T));
-    
-    if (optionType == OptionType::Call) {
-        float term2 = -r * K * exp(-r * T) * cdf_normal(d2);
-        return (term1 + term2) / 365.0f; // Divided by 365 for daily effect
-    } else {
-        float term2 = r * K * exp(-r * T) * (1.0f - cdf_normal(d2));
-        return (term1 + term2) / 365.0f;
-    }
-}
-
 __host__ __device__ void compute_all_option_values(
     float S0, float K, float T, float v, float r,
     float& call_price, float& put_price, 
@@ -181,6 +121,7 @@ __host__ __device__ void compute_all_option_values(
     put_price = K * exp_rt * (1.0f - nd2) - S0 * (1.0f - nd1);
     
     // Delta
+    // Has two different values depending if the option is aa call or a put
     delta_call = nd1;
     delta_put = nd1 - 1.0f;
     
@@ -191,17 +132,32 @@ __host__ __device__ void compute_all_option_values(
     vega_val = S0 * sqrt_T * pd1 * 0.01f;
     
     // Rho
+    // Same as delta, has two different values depending if the option is a call or a put
     rho_call = K * T * exp_rt * nd2 * 0.01f;
     rho_put = -K * T * exp_rt * (1.0f - nd2) * 0.01f;
     
     // Theta
     float term1 = -(S0 * v * pd1) / (2.0f * sqrt_T);
-    theta_call = (term1 - r * K * exp_rt * nd2) / 365.0f;
-    theta_put = (term1 + r * K * exp_rt * (1.0f - nd2)) / 365.0f;
+    theta_call = (term1 - r * K * exp_rt * nd2) / 365.0f; // In days 
+    theta_put = (term1 + r * K * exp_rt * (1.0f - nd2)) / 365.0f; // In days
 }
 
-// Define kernel before simulation function
+// This was a tricky one:
+
+// At first I was trying to compute the values for each option in the kernel, but then I realized that I could just compute all the values at once
+// This way I can use the same values for all the options and avoid having to compute them multiple times
+
+// I guess this should've been an obvious choice to make but it was hard at first to look at it lol
+
+// The only issue is that I am not sure why but I didn't find any huge performance gains from this... 
+
+// I was tried to look for other optimizations but I thiiiink they are quite outside of the scope of the assignment/coursee
+
 __global__ void option_pricing_kernel(
+
+    // This takes multiple pointers but also has multiple outputs
+    // Because I want to compute all at the same time :)
+
     float* S0, float* K, float* T, float* sigma, float* r, 
     float* call_prices, float* put_prices, 
     float* delta_calls, float* delta_puts,
@@ -225,7 +181,6 @@ __global__ void option_pricing_kernel(
 
 // Part 1: tests
 
-
 // a)   S = 90;  r = 0.03; v = 0.3, T= 1, K=90
 // b)   S = 95; r = 0.03,  v= 0.3;  T= 1, K=90
 // c)   S = 100;  r = 0.03; v = 0.3;  T= 2, K=100
@@ -237,8 +192,18 @@ int tests() {
     float sigma = 0.3f;
 
     // Test case a
+    
+
+    // For each test I just change whatever changes, not all parameters
+
     float S0_a = 90.0f, K_a = 90.0f, T_a = 1.0f;
+    
+    // All objects
+
     float call_price_a, put_price_a, delta_call_a, delta_put_a, gamma_a, vega_a, rho_call_a, rho_put_a, theta_call_a, theta_put_a;
+    
+    // Compute all values at the same time
+
     compute_all_option_values(S0_a, K_a, T_a, sigma, r, 
                               call_price_a, put_price_a, delta_call_a, delta_put_a, gamma_a, vega_a, 
                               rho_call_a, rho_put_a, theta_call_a, theta_put_a);
@@ -254,7 +219,9 @@ int tests() {
     
     // Test case b
     float S0_b = 95.0f, K_b = 90.0f, T_b = 1.0f;
+    
     float call_price_b, put_price_b, delta_call_b, delta_put_b, gamma_b, vega_b, rho_call_b, rho_put_b, theta_call_b, theta_put_b;
+    
     compute_all_option_values(S0_b, K_b, T_b, sigma, r, 
                               call_price_b, put_price_b, delta_call_b, delta_put_b, gamma_b, vega_b, 
                               rho_call_b, rho_put_b, theta_call_b, theta_put_b);
@@ -270,7 +237,9 @@ int tests() {
 
     // Test case c
     float S0_c = 100.0f, K_c = 100.0f, T_c = 2.0f;
+    
     float call_price_c, put_price_c, delta_call_c, delta_put_c, gamma_c, vega_c, rho_call_c, rho_put_c, theta_call_c, theta_put_c;
+    
     compute_all_option_values(S0_c, K_c, T_c, sigma, r, 
                               call_price_c, put_price_c, delta_call_c, delta_put_c, gamma_c, vega_c, 
                               rho_call_c, rho_put_c, theta_call_c, theta_put_c);
@@ -286,7 +255,9 @@ int tests() {
 
     // Test case d
     float S0_d = 105.0f, K_d = 100.0f, T_d = 2.0f;
+    
     float call_price_d, put_price_d, delta_call_d, delta_put_d, gamma_d, vega_d, rho_call_d, rho_put_d, theta_call_d, theta_put_d;
+    
     compute_all_option_values(S0_d, K_d, T_d, sigma, r, 
                               call_price_d, put_price_d, delta_call_d, delta_put_d, gamma_d, vega_d, 
                               rho_call_d, rho_put_d, theta_call_d, theta_put_d);
@@ -302,7 +273,9 @@ int tests() {
 
     // Test case e
     float S0_e = 110.0f, K_e = 100.0f, T_e = 2.0f;
+    
     float call_price_e, put_price_e, delta_call_e, delta_put_e, gamma_e, vega_e, rho_call_e, rho_put_e, theta_call_e, theta_put_e;
+    
     compute_all_option_values(S0_e, K_e, T_e, sigma, r, 
                               call_price_e, put_price_e, delta_call_e, delta_put_e, gamma_e, vega_e, 
                               rho_call_e, rho_put_e, theta_call_e, theta_put_e);
@@ -321,6 +294,7 @@ int tests() {
 int simulation() {
     int num_simulations = N_SIMULATIONS;
     
+    // Same object as in the previous assignment
 
     std::vector<float> S0_inputs(num_simulations);
     std::vector<float> K_inputs(num_simulations);
@@ -342,16 +316,18 @@ int simulation() {
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
 
-    // Difference: we have to compute both call and put prices (and greeks for both in case they are needed)
+    // Difference compared to the previous assignment: we have to compute both call and put prices (and greeks for both in case they are needed)
     std::cout << "Computing prices and greeks..." << std::endl;
     
-    // Allocate device memory
+    // Allocate device memory for all objectsss
+
     float *d_S0, *d_K, *d_T, *d_sigma, *d_r;
     float *d_call_prices, *d_put_prices;
     float *d_delta_calls, *d_delta_puts, *d_gammas, *d_vegas;
     float *d_rho_calls, *d_rho_puts, *d_theta_calls, *d_theta_puts;
 
-    // Allocate and copy input data
+    // Allocate and copy input data for ALL objects: inputs (copied) and outputs (computed then copied back)
+
     cudaMalloc(&d_S0, num_simulations * sizeof(float));
     cudaMalloc(&d_K, num_simulations * sizeof(float));
     cudaMalloc(&d_T, num_simulations * sizeof(float));
@@ -368,6 +344,8 @@ int simulation() {
     cudaMalloc(&d_theta_calls, num_simulations * sizeof(float));
     cudaMalloc(&d_theta_puts, num_simulations * sizeof(float));
 
+    // Copy all inputs to the device
+
     cudaMemcpy(d_S0, S0_inputs.data(), num_simulations * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_K, K_inputs.data(), num_simulations * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_T, T_inputs.data(), num_simulations * sizeof(float), cudaMemcpyHostToDevice);
@@ -375,8 +353,12 @@ int simulation() {
     cudaMemcpy(d_r, r_inputs.data(), num_simulations * sizeof(float), cudaMemcpyHostToDevice);
 
     // Launch kernel
+
+    // I was trying to use different block size but I didn't see any performance gains idk why
+
     int blockSize = 256;
-    int numBlocks = (num_simulations + blockSize - 1) / blockSize;
+    int numBlocks = (num_simulations + blockSize - 1) / blockSize; // I googled for this formula
+
     option_pricing_kernel<<<numBlocks, blockSize>>>(
         d_S0, d_K, d_T, d_sigma, d_r,
         d_call_prices, d_put_prices,
@@ -386,7 +368,8 @@ int simulation() {
         d_theta_calls, d_theta_puts,
         num_simulations);
 
-    // Copy results back
+    // Allocate objects for all outputs
+
     std::vector<float> call_prices(num_simulations);
     std::vector<float> put_prices(num_simulations);
     std::vector<float> delta_calls(num_simulations);
@@ -397,6 +380,9 @@ int simulation() {
     std::vector<float> rho_puts(num_simulations);
     std::vector<float> theta_calls(num_simulations);
     std::vector<float> theta_puts(num_simulations);
+
+
+    // Copy results back
 
     cudaMemcpy(call_prices.data(), d_call_prices, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(put_prices.data(), d_put_prices, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
@@ -410,9 +396,11 @@ int simulation() {
     cudaMemcpy(theta_puts.data(), d_theta_puts, num_simulations * sizeof(float), cudaMemcpyDeviceToHost);
 
     // Print the first call price to verify results
+
     std::cout << "First calculated call price: " << call_prices[0] << std::endl;
 
     // Free device memory
+
     cudaFree(d_S0);
     cudaFree(d_K);
     cudaFree(d_T);
