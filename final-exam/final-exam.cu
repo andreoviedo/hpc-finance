@@ -1,39 +1,32 @@
-// We will be using CUDA, so a .cu file is necessary
-
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <algorithm>
-#include <random>
-//#include <omp.h>
 #include <iomanip>
 #include <chrono>
-
-// Might need to include other libraries
-
-// CUDA
+#include <numeric> // Required for std::accumulate
 #include <cuda_runtime.h>
+#include <curand_kernel.h> // For cuRAND
+#include <map> // To store results easily
 
-// Check if the time to populate is also part of the timer
+using namespace std::chrono;
 
-#define N_PATHS 1000
-#define PROB_UP 0.5
-#define PROB_DOWN 0.5
-#define N_OPTIONS 500
+// --- Constants ---
+#define NUM_PATHS 1000000 // Number of Monte Carlo paths per option (>= 1 million)
+#define NUM_OPTIONS_PER_T 100 // 100 strikes per T
+#define START_STRIKE 50.0f
+#define STRIKE_STEP 1.0f
+#define NUM_T_VALUES 5
+#define TOTAL_OPTIONS (NUM_OPTIONS_PER_T * NUM_T_VALUES) // 500 total options
 
-using namespace std::chrono; // Add namespace
+// Structure to hold market parameters for each T
 
-// There is no "random" data being generated. Monte Carlo generates the randomess here
-
-// We can directly jump into the implementation
-
-struct MarketParams{
-    float T;
-    float r;
-    float v;
+struct MarketParams {
+    float T; // Time to maturity
+    float r; // Risk-free rate
+    float v; // Volatility
 };
 
-
+// Market data provided in the instructions
 const std::vector<MarketParams> marketData = {
     {0.5f, 0.03f, 0.30f},
     {0.75f, 0.04f, 0.29f},
@@ -42,149 +35,244 @@ const std::vector<MarketParams> marketData = {
     {1.5f, 0.07f, 0.26f}
 };
 
-
-// Check for CUDA here
-
-// Host function to manage the CUDA kernel launch for generateLastStep
-
-__global__ void generateLastStep_on_device(float* d_finalAssetPrices, float S0, float u, float d, int N) {
-    int j = blockIdx.x * blockDim.x + threadIdx.x;
-
-    // Check bounds: ensure we don't write past the end of the array
-    // The array size is N + 1
-    if (j <= N) {
-        // Use powf for float exponentiation on the device
-        d_finalAssetPrices[j] = S0 * powf(u, (float)j) * powf(d, (float)(N - j));
+// Kernel to initialize cuRAND states
+__global__ void setupRandStates_kernel(curandState_t* states, unsigned long long seed, int numStates) { int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < numStates) {
+        // Initialize each state with a unique sequence based on the index
+        curand_init(seed, idx, 0, &states[idx]);
     }
 }
 
-float* generateLastStep_on_cpu(float S0, float T, int N, float sigma, float r) {
-    // Calculate parameters on the host
-    float dt = T / static_cast<float>(N);
-    float sqrt_dt = std::sqrt(dt);
-    float drift = r - 0.5f * sigma * sigma;
-    float u = std::exp(drift * dt + sigma * sqrt_dt);
-    float d = std::exp(drift * dt - sigma * sqrt_dt);
+// Kernel to calculate European call option prices using Monte Carlo
+// This whole function offloads the calculation of the option price to the GPU.
+
+__global__ void monteCarloCallPrice_kernel(
+    float* d_optionPrices,          // Output array for calculated prices
+    curandState_t* d_randStates,    // cuRAND states for each option thread
+    float S0,                       // Initial stock price for this scenario
+    const float* d_K_batch,         // Strike prices for each option
+    const float* d_T_batch,         // Time to maturity for each option
+    const float* d_r_batch,         // Risk-free rates for each option
+    const float* d_v_batch,         // Volatilities for each option
+    int numOptions,                 // Total number of options
+    int numPaths)                   // Number of simulation paths
+{
+    int optionIdx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (optionIdx < numOptions) {
+        float K = d_K_batch[optionIdx];
+        float T = d_T_batch[optionIdx];
+        float r = d_r_batch[optionIdx];
+        float v = d_v_batch[optionIdx];
+
+        curandState_t state = d_randStates[optionIdx]; // Load state
+        float sumPayoffs = 0.0f;
+
+        // Precompute constants for this option
+        float drift = (r - 0.5f * v * v) * T;
+        float diffusion = v * sqrtf(T);
+
+        // Monte Carlo simulation loop
+        for (int i = 0; i < numPaths; ++i) {
+            // Generate standard normal random number
+            float Z = curand_normal(&state);
+            // Calculate final stock price using Black-Scholes formula
+            float ST = S0 * expf(drift + diffusion * Z);
+            // Calculate call option payoff
+            float payoff = fmaxf(ST - K, 0.0f);
+            sumPayoffs += payoff;
+        }
+
+        // Calculate average payoff
+        float avgPayoff = sumPayoffs / static_cast<float>(numPaths);
+        // Discount back to present value
+        float price = expf(-r * T) * avgPayoff;
+
+        // Store the calculated option price
+        d_optionPrices[optionIdx] = price;
+        // Store the updated state back to global memory
+        d_randStates[optionIdx] = state;
+    }
+}
+
+// --- Calculation Function (Handles a single S0) ---
+// This function is responsible for setting up the Monte Carlo simulation for a specific stock price S0.
+// It allocates memory for the option prices, initializes the cuRAND states, and launches the Monte Carlo kernel.
+// It then copies the results back to the host and calculates the portfolio value.
+
+float calculate_portfolio_value_for_S0(
+    float S0,                       // The specific stock price for this calculation
+    curandState_t* d_randStates,    // Pre-initialized cuRAND states
+    float* d_optionPrices,          // Pre-allocated buffer for option prices
+    std::vector<float>& h_optionPrices, // Pre-allocated host buffer
+    const float* d_K_batch,         // Device pointer to K values
+    const float* d_T_batch,         // Device pointer to T values
+    const float* d_r_batch,         // Device pointer to r values
+    const float* d_v_batch          // Device pointer to v values
+    )
+{
+    int threadsPerBlockMC = 256;
+    int blocksPerGridMC = (TOTAL_OPTIONS + threadsPerBlockMC - 1) / threadsPerBlockMC;
+    
+    size_t optionParamsSize = TOTAL_OPTIONS * sizeof(float);
+
+    // Launch Monte Carlo kernel for the specific S0
+    monteCarloCallPrice_kernel<<<blocksPerGridMC, threadsPerBlockMC>>>(
+        d_optionPrices, d_randStates, S0,
+        d_K_batch, d_T_batch, d_r_batch, d_v_batch,
+        TOTAL_OPTIONS, NUM_PATHS);
+
+    // Copy back the results to the host
+    cudaMemcpy(h_optionPrices.data(), d_optionPrices, optionParamsSize, cudaMemcpyDeviceToHost);
+    
+    // Calculate portfolio value (sum of individual option prices)
+    
+    // Sum up the option prices using accumulate which is more efficient than a for loop
+
+    float portfolioValue = std::accumulate(h_optionPrices.begin(), h_optionPrices.end(), 0.0f);
+
+    return portfolioValue;
+}
+
+// Running all steps in the main function
+int main() {
+    std::cout << std::fixed << std::setprecision(2); // Format output
+
+    // Populate input data on the CPU
+
+    // We will valuate the portfolio for all T (and v) values
+    // We will do this by populating the vectors with the correct values
+    // and then copying them to the GPU
+
+    std::vector<float> h_K_batch(TOTAL_OPTIONS);
+    std::vector<float> h_T_batch(TOTAL_OPTIONS);
+    std::vector<float> h_r_batch(TOTAL_OPTIONS);
+    std::vector<float> h_v_batch(TOTAL_OPTIONS);
+
+    int currentIdx = 0;
+    for (const auto& marketParams : marketData) { // For all T (and v) values
+        for (int i = 0; i < NUM_OPTIONS_PER_T; ++i) {
+            h_K_batch[currentIdx] = START_STRIKE + static_cast<float>(i) * STRIKE_STEP; // Strikes 50 to 149
+            h_T_batch[currentIdx] = marketParams.T;
+            h_r_batch[currentIdx] = marketParams.r;
+            h_v_batch[currentIdx] = marketParams.v;
+            currentIdx++;
+        }
+    }
 
     // Allocate memory on the GPU
-    int arraySize = N + 1;
-    size_t memSize = arraySize * sizeof(float);
-    float* d_finalAssetPrices;
-    cudaMalloc(&d_finalAssetPrices, memSize);
 
-    // Configure kernel launch parameters
-    int threadsPerBlock = 256; // Common choice, can be tuned
-    // Ensure enough blocks to cover all N+1 elements
-    int blocksPerGrid = (arraySize + threadsPerBlock - 1) / threadsPerBlock;
+    // We will allocate memory for the strike prices, time to maturity, risk-free rate, and volatility
+    // We will also allocate memory for the option prices and the cuRAND states
 
-    // Launch the kernel
-    generateLastStep_on_device<<<blocksPerGrid, threadsPerBlock>>>(d_finalAssetPrices, S0, u, d, N);
+    float *d_K_batch, *d_T_batch, *d_r_batch, *d_v_batch;
+    float *d_optionPrices;
+    curandState_t* d_randStates;
 
+    size_t optionParamsSize = TOTAL_OPTIONS * sizeof(float);
+    
+    cudaMalloc(&d_K_batch, optionParamsSize);
+    cudaMalloc(&d_T_batch, optionParamsSize);
+    cudaMalloc(&d_r_batch, optionParamsSize);
+    cudaMalloc(&d_v_batch, optionParamsSize);
+    cudaMalloc(&d_optionPrices, optionParamsSize); // For results
+    
+    cudaMalloc(&d_randStates, TOTAL_OPTIONS * sizeof(curandState_t));
 
-    // Return the device pointer
-    return d_finalAssetPrices;
-}
+    // Initialize cuRAND states
 
-__global__ void calculateTerminalPayoff_on_device(float* d_optionValues, const float* d_finalAssetPrices, float K, int N) {
-    int j = blockIdx.x * blockDim.x + threadIdx.x;
+    int threadsPerBlockRand = 256;
+    int blocksPerGridRand = (TOTAL_OPTIONS + threadsPerBlockRand - 1) / threadsPerBlockRand;
+    setupRandStates_kernel<<<blocksPerGridRand, threadsPerBlockRand>>>(d_randStates, time(0), TOTAL_OPTIONS);
 
-    // Check bounds (array size is N+1)
-    if (j <= N) {
-        // Calculate Call option payoff: max(S_T - K, 0)
-        d_optionValues[j] = fmaxf(d_finalAssetPrices[j] - K, 0.0f);
-    }
-}
+    // Host buffer for results
+    std::vector<float> h_optionPrices(TOTAL_OPTIONS);
 
-// The backward induction is done here 
+    // Copy static data to GPU
 
-// Check for CUDA here
+    cudaMemcpy(d_K_batch, h_K_batch.data(), optionParamsSize, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_T_batch, h_T_batch.data(), optionParamsSize, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_r_batch, h_r_batch.data(), optionParamsSize, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_v_batch, h_v_batch.data(), optionParamsSize, cudaMemcpyHostToDevice);
 
-// Updated priceEuropeanOption (partially converted)
-float priceEuropeanOption(
-    float S0, float K, float T, int N, float sigma, float r)
-{
-    float dt = T / static_cast<float>(N);
-    float p = PROB_UP;
-    float q = PROB_DOWN;
-    float discountFactor = std::exp(-r * dt);
+    // Map to store results: (Stock Price -> Portfolio Value)
 
-    // Call the CUDA version to get prices on the GPU
-    float* d_finalAssetPrices = generateLastStep_on_cpu(S0, T, N, sigma, r);
+    std::map<int, float> portfolioResults;
 
-    // --- Allocate memory for option values on GPU ---
-    int arraySize = N + 1;
-    size_t memSize = arraySize * sizeof(float);
-    float* d_optionValues;
-    cudaMalloc(&d_optionValues, memSize);
+    auto t1 = high_resolution_clock::now();
 
-    // --- Configure and launch terminal payoff kernel ---
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (arraySize + threadsPerBlock - 1) / threadsPerBlock;
-    calculateTerminalPayoff_on_device<<<blocksPerGrid, threadsPerBlock>>>(d_optionValues, d_finalAssetPrices, K, N);
-    cudaGetLastError(); // Check kernel launch
+    // Compute portfolio value for each required scenario
 
-    // --- Free d_finalAssetPrices - no longer needed ---
-    cudaFree(d_finalAssetPrices);
+    // Part a): S0 = 100
+    float S0_a = 100.0f;
+    float value_a = calculate_portfolio_value_for_S0(
+        S0_a,
+        d_randStates,
+        d_optionPrices,
+        h_optionPrices,
+        d_K_batch,
+        d_T_batch,
+        d_r_batch,
+        d_v_batch
+    );
+    portfolioResults[static_cast<int>(S0_a)] = value_a;
 
-
-    // --- !!! TEMPORARY: Copy d_optionValues back to CPU for the CPU backward loop !!! ---
-    // --- !!! We will replace this in the next step.                            !!! ---
-    std::vector<float> optionValues(N + 1); // Host vector
-    cudaMemcpy(optionValues.data(), d_optionValues, memSize, cudaMemcpyDeviceToHost);
-
-
-    // --- !!! The backward induction loop is STILL on the CPU !!! ---
-    // --- !!! This loop WILL BE converted to CUDA kernels.      !!! ---
-    for (int i = N - 1; i >= 0; --i) {
-        // This inner loop needs i+1 calculations
-        for (int j = 0; j <= i; ++j) {
-            // Reading and writing to the temporary host vector optionValues
-            optionValues[j] = discountFactor * (p * optionValues[j + 1] + q * optionValues[j]);
-        }
+    // Part b): S0 from 99 down to 95
+    for (float S0_b = 99.0f; S0_b >= 95.0f; S0_b -= 1.0f) {
+        float value_b = calculate_portfolio_value_for_S0(
+            S0_b,
+            d_randStates,
+            d_optionPrices,
+            h_optionPrices,
+            d_K_batch,
+            d_T_batch,
+            d_r_batch,
+            d_v_batch
+        );
+        portfolioResults[static_cast<int>(S0_b)] = value_b;
     }
 
-    // --- !!! Free d_optionValues (allocated on GPU) !!! ---
-    // Important to free even though we used a temporary host copy for the loop
-    cudaFree(d_optionValues);
-
-
-    // Return the result calculated by the temporary host loop
-    return optionValues[0];
-}
-
-// Function to calculate the sum of option prices
-
-float sumOfOptionPrices(float S0){
-    float currentSum = 0.0f;
-
-    for(const auto& marketParams : marketData){
-        float T = marketParams.T;
-        float r = marketParams.r;
-        float v = marketParams.v;
-        for(int i = 0; i < N_OPTIONS; i++){
-            float K = 50.0f + 1.0f * i;
-            float price = priceEuropeanOption(S0, K, T, N_PATHS, v, r);
-            currentSum += price;
-        }
+    // Part c): S0 from 101 up to 105
+    for (float S0_c = 101.0f; S0_c <= 105.0f; S0_c += 1.0f) {
+        float value_c = calculate_portfolio_value_for_S0(
+            S0_c,
+            d_randStates,
+            d_optionPrices,
+            h_optionPrices,
+            d_K_batch,
+            d_T_batch,
+            d_r_batch,
+            d_v_batch
+        );
+        portfolioResults[static_cast<int>(S0_c)] = value_c;
     }
-    return currentSum;
-}   
 
-int step_a(){
-    // Test with S0 = 100.0f
+    auto t2 = high_resolution_clock::now();
 
-    float S0 = 100.0f;
+    // Calculate elapsed time
+    auto duration = duration_cast<microseconds>(t2 - t1);
 
-    float currentSum = sumOfOptionPrices(S0);
+    // Free GPU Memory
+    cudaFree(d_K_batch);
+    cudaFree(d_T_batch);
+    cudaFree(d_r_batch);
+    cudaFree(d_v_batch);
+    cudaFree(d_optionPrices);
+    cudaFree(d_randStates);
 
-    return currentSum;
-}
+    // Write results to Console for all parts (it shows a cute usual graph for an option portfolio: as S0 increases, the portfolio value increases)
 
-int main(){
-    std::cout << "Total sum of option prices: " << step_a() << std::endl;
+    std::cout << "Stock price      Portfolio Value" << std::endl;
+    for (const auto& result : portfolioResults) { // Map iterates in key order (95 to 105)
+        std::cout << result.first << "                           " << result.second << std::endl;
+    }
+    std::cout << std::endl;
+
+    // Show Time
+    std::cout << "elapsed time = " << duration.count() << " (microseconds)" << std::endl;
+
     return 0;
 }
 
-// Compilation with:
-
-// nvcc -o final-exam final-exam.cu
+// Compilation command:
+// nvcc -03 -lcurand final-exam.cu -o final-exam
