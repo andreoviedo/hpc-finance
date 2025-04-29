@@ -188,7 +188,3 @@ int main(){
 // Compilation with:
 
 // nvcc -o final-exam final-exam.cu
-
-// Forward declaration of the kernel
-__global__ void generateLastStepKernel(float* d_finalAssetPrices, float S0, float u, float d, int N);
-
